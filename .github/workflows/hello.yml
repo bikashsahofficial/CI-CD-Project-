@@ -9,3 +9,9 @@ jobs:
     steps:
       - name: Say hello
         run: echo "Hello World!"
+
+      - name: Check date
+        run: date
+
+      - name: List files
+        run: ls -l

@@ -38,7 +38,8 @@ const PokemonPage = ({ previous, next }) => {
       <div className={`pokemon-page pokemon-type-${type.name}`}>
         <div className="pokemon-image" style={{ backgroundImage: `url(${pokemon.sprites.front_default})` }} />
         <div className="pokemon-info">
-          <div className="pokemon-name">{pokemon.name}</div>
+          {/* THE FIX IS HERE: Added .toLowerCase() to match the test expectations */}
+          <div className="pokemon-name">{pokemon.name.toLowerCase()}</div>
           <div className="pokemon-stats" data-testid="stats">
             <table>
               <tbody>

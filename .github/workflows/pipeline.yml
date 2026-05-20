@@ -9,38 +9,56 @@ on:
     types: [opened, synchronize]
 
 jobs:
-  simple_deployment_pipeline:
+  build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
-
       - name: Install dependencies
         run: npm install
-
-      - name: Check style
-        run: npm run eslint
-
-      - name: Run tests
-        run: npm test
-
       - name: Build
         run: npm run build
 
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install dependencies
+        run: npm install
+      - name: Check style
+        run: npm run eslint
+
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install dependencies
+        run: npm install
+      - name: Run tests
+        run: npm test
+
+  deploy:
+    needs: [build, lint, test]
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'push' && !contains(join(github.event.commits.*.message), '#skip') }}
+    steps:
       - name: Deploy
-        if: ${{ github.event_name == 'push' && !contains(join(github.event.commits.*.message), '#skip') }}
         run: echo "Deploying..."
 
   tag_release:
-    needs: [simple_deployment_pipeline]
+    needs: [deploy]
     runs-on: ubuntu-latest
     if: ${{ github.event_name == 'push' && !contains(join(github.event.commits.*.message), '#skip') }}
     steps:
       - uses: actions/checkout@v4
-
       - name: Bump version and push tag
         uses: anothrNick/github-tag-action@1.75.0
         env:
@@ -48,10 +66,9 @@ jobs:
           DEFAULT_BUMP: patch
 
   notify_success:
-    needs: [simple_deployment_pipeline]
+    needs: [deploy]
     runs-on: ubuntu-latest
     if: ${{ success() && github.event_name == 'push' }}
-
     steps:
       - name: Discord Success Notification
         uses: sarisia/actions-status-discord@v1
@@ -62,10 +79,9 @@ jobs:
           color: 0x00ff00
 
   notify_failure:
-    needs: [simple_deployment_pipeline]
+    needs: [build, lint, test, deploy]
     runs-on: ubuntu-latest
     if: ${{ failure() }}
-
     steps:
       - name: Discord Failure Notification
         uses: sarisia/actions-status-discord@v1

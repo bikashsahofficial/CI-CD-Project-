@@ -1,4 +1,4 @@
-/* eslint-env node */
+/* global module, process */
 
 // playwright.config.js
 module.exports = {

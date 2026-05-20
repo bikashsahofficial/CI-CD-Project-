@@ -1,14 +1,12 @@
-const express = require("express");
-const app = express();
+const express = require('express')
+const path = require('path')
 
-// get the port from env variable
-const PORT = process.env.PORT || 5001;
+const app = express()
 
-app.use(express.static("dist"));
+app.use(express.static('dist'))
 
-const start = async () => {
-  await app.listen(PORT)
-  console.log(`server started on port ${PORT}`)
-}
+app.get('*', (req, res) => {
+  res.sendFile(path.resolve(__dirname, 'dist', 'index.html'))
+})
 
-start()
+module.exports = app

@@ -14,19 +14,23 @@ const PokemonPage = ({ previous, next }) => {
   if (isLoading) {
     return <LoadingSpinner />
   }
+
   if (error) {
     return <ErrorMessage error={error} />
   }
 
   const { type } = pokemon.types.find((type) => type.slot === 1)
+
   const stats = pokemon.stats.map((stat) => ({
     name: formatName(stat.stat.name),
     value: stat.base_stat
   })).reverse()
+
   const normalAbility = pokemon.abilities.find((ability) => !ability.is_hidden)
+
   const hiddenAbility = pokemon.abilities.find((ability) => ability.is_hidden === true)
 
-  console.log('hiddenAbility=', hiddenAbility); // eslint-disable-line no-console
+  console.log('hiddenAbility=', hiddenAbility) // eslint-disable-line no-console
 
   return (
     <>
@@ -35,11 +39,18 @@ const PokemonPage = ({ previous, next }) => {
         <Link to="/">Home</Link>
         {next && <Link to={`/pokemon/${next.name}`}>Next</Link>}
       </div>
+
       <div className={`pokemon-page pokemon-type-${type.name}`}>
-        <div className="pokemon-image" style={{ backgroundImage: `url(${pokemon.sprites.front_default})` }} />
+        <div
+          className="pokemon-image"
+          style={{ backgroundImage: `url(${pokemon.sprites.front_default})` }}
+        />
+
         <div className="pokemon-info">
-          {/* THE FIX IS HERE: Added .toLowerCase() to match the test expectations */}
-          <div className="pokemon-name">{pokemon.name.toLowerCase()}</div>
+          <div className="pokemon-name">
+            {pokemon.name.toLowerCase()}
+          </div>
+
           <div className="pokemon-stats" data-testid="stats">
             <table>
               <tbody>
@@ -52,9 +63,15 @@ const PokemonPage = ({ previous, next }) => {
               </tbody>
             </table>
           </div>
+
           <div className="pokemon-abilities">
-            {normalAbility && <PokemonAbility abilityName={normalAbility.ability.name} />}
-            {hiddenAbility && <PokemonAbility abilityName={hiddenAbility.ability.name} />}
+            {normalAbility && (
+              <PokemonAbility abilityName={normalAbility.ability.name} />
+            )}
+
+            {hiddenAbility && (
+              <PokemonAbility abilityName={hiddenAbility.ability.name} />
+            )}
           </div>
         </div>
       </div>
